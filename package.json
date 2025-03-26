@@ -1,0 +1,28 @@
+{
+  "name": "claude-code-docker",
+  "version": "1.0.0",
+  "description": "claude-code-docker",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-code": "^0.2.55"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gendosu/claude-code-docker.git"
+  },
+  "author": "gendosu",
+  "license": "MIT",
+  "homepage": "https://github.com/gendosu/claude-code-docker#readme",
+  "keywords": [
+    "typescript",
+    "docker",
+    "example"
+  ]
+}
