@@ -18,5 +18,19 @@ Then, push it to your registry, e.g. `docker push myregistry.com/myapp`.
 Consult Docker's [getting started](https://docs.docker.com/go/get-started-sharing/)
 docs for more detail on building and pushing.
 
+### Triggering Multi-Platform Builds and Releases
+
+We have set up a GitHub Actions workflow to automate multi-platform builds and releases to GitHub Container Registry (ghcr). The workflow file is located at `.github/workflows/build-and-push.yml`.
+
+#### Triggering the Workflow
+
+The workflow is triggered automatically on push to the `main` branch. You can also manually trigger the workflow from the GitHub Actions tab.
+
+1. Go to the "Actions" tab in your GitHub repository.
+2. Select the "Build and Push Docker Image" workflow from the list.
+3. Click the "Run workflow" button.
+
+This will start the multi-platform build and release process.
+
 ### References
 * [Docker's Node.js guide](https://docs.docker.com/language/nodejs/)
