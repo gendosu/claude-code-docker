@@ -30,8 +30,14 @@ FROM node:${NODE_VERSION}-alpine AS final
 
 # Use production node environment by default.
 ENV NODE_ENV=production
+ENV SHELL=/bin/sh
 
 WORKDIR /app
+
+RUN npm install -g @anthropic-ai/claude-code
+
+# Install shell
+RUN apk add --no-cache bash
 
 # Copy only necessary files from deps stage
 COPY --from=deps /app/node_modules ./node_modules
@@ -43,4 +49,4 @@ RUN adduser -D appuser \
 USER appuser
 
 # Run the application.
-CMD npx claude
+ENTRYPOINT ["npx", "claude"]
