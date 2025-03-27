@@ -1,40 +1,40 @@
 # claude-code-docker
 
-Claude Code用のDockerイメージです。このイメージを使用することで、Claude Codeをコンテナ環境で実行することができます。
+A Docker image for Claude Code that allows you to run Claude Code in a container environment.
 
-## 機能
+## Features
 
-- Node.js 22.11.0ベース
-- @anthropic-ai/claude-codeがプリインストール済み
-- マルチプラットフォーム対応（linux/amd64, linux/arm64）
+- Based on Node.js 22.11.0
+- Pre-installed with @anthropic-ai/claude-code
+- Multi-platform support (linux/amd64, linux/arm64)
 
-## 使用方法
+## Usage
 
-### Docker Composeを使用する場合
+### Using Docker Compose
 
-1. 環境変数の設定:
+1. Set environment variables:
 ```env
 GITHUB_TOKEN=your_github_token
 GITHUB_ID=your_github_id
 ```
 
-2. コンテナの起動:
+2. Start the container:
 ```bash
 docker compose up --build
 ```
 
-### Docker単体で使用する場合
+### Using Docker
 
 ```bash
 docker run --rm -it \
   -w `pwd` \
-  -v `pwd`:`pwd`` \
+  -v `pwd`:`pwd` \
   ghcr.io/gendosu/claude-code-docker:latest
 ```
 
-### Claude DesktopのMCP Serverとして使用する際の設定ファイルの例
+### Example Configuration for Claude Desktop MCP Server
 
-Claude Desktopの設定ファイル（`claude_desktop_config.json`）に以下のように設定を追加することで、Claude Code機能を利用できます
+Add the following configuration to your Claude Desktop config file (`claude_desktop_config.json`) to use the Claude Code feature:
 
 ```json
 {
@@ -61,27 +61,27 @@ Claude Desktopの設定ファイル（`claude_desktop_config.json`）に以下�
 }
 ```
 
-設定項目の説明：
-- `command`: Dockerコマンドを指定
+Configuration details:
+- `command`: Specify the Docker command
 - `args`: 
-  - `-w`: 作業ディレクトリを指定
-  - `-v`: ホストとコンテナ間のボリュームマウントを指定
-  - `mcp serve`: Claude Code MCPサーバーを起動
+  - `-w`: Specify the working directory
+  - `-v`: Specify volume mount between host and container
+  - `mcp serve`: Start the Claude Code MCP server
 
-注意: この設定はClaude Desktop専用です。VSCodeでは異なる設定方法が必要となります。
+Note: This configuration is specific to Claude Desktop. VSCode requires a different configuration method.
 
 ## GitHub Container Registry
 
-このイメージは GitHub Container Registry で公開されています：
+This image is available on GitHub Container Registry:
 
 ```bash
 docker pull ghcr.io/gendosu/claude-code-docker:latest
 ```
 
-## ライセンス
+## License
 
 MIT
 
-## 作者
+## Author
 
 gendosu
