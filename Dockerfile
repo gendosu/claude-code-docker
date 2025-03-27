@@ -5,7 +5,7 @@ ARG PNPM_VERSION=latest
 
 ################################################################################
 # Use node image for base image for all stages.
-FROM node:${NODE_VERSION}-alpine AS base
+FROM node:${NODE_VERSION}-slim AS base
 
 # Set working directory for all build stages.
 WORKDIR /app
@@ -26,25 +26,25 @@ RUN pnpm install --prod --frozen-lockfile \
 
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies
-FROM node:${NODE_VERSION}-alpine AS final
+FROM node:${NODE_VERSION}-slim AS final
 
 # Use production node environment by default.
 ENV NODE_ENV=production
-ENV SHELL=/bin/sh
+ENV SHELL=/bin/bash
 
 WORKDIR /app
 
 RUN npm install -g @anthropic-ai/claude-code
 
 # Install shell
-RUN apk add --no-cache bash
+RUN apt-get update && apt-get install -y bash && rm -rf /var/lib/apt/lists/*
 
 # Copy only necessary files from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Create a non-root user with limited permissions
-RUN adduser -D appuser \
+RUN useradd -m appuser \
     && chown -R appuser:appuser /app
 USER appuser
 
