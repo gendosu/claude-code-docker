@@ -2,6 +2,7 @@
 
 ARG NODE_VERSION=22.11.0
 ARG PNPM_VERSION=latest
+ARG GITHUB_TOKEN
 
 ################################################################################
 # Use node image for base image for all stages.

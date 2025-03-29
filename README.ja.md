@@ -27,6 +27,7 @@ docker compose up --build
 
 ```bash
 docker run --rm -it \
+  -e GITHUB_TOKEN \
   -w `pwd` \
   -v `pwd`:`pwd`` \
   ghcr.io/gendosu/claude-code-docker:latest
@@ -45,6 +46,8 @@ Claude Desktopの設定ファイル（`claude_desktop_config.json`）に以下�
         "run",
         "--rm",
         "-i",
+        "-e",
+        "GITHUB_TOKEN",
         "-w",
         "/path/to/your/workspace",
         "-v",
@@ -54,7 +57,8 @@ Claude Desktopの設定ファイル（`claude_desktop_config.json`）に以下�
         "serve"
       ],
       "env": {
-        "NODENV_VERSION": "22.11.0"
+        "NODENV_VERSION": "22.11.0",
+        "GITHUB_TOKEN": "<Your GitHub Token>"
       }
     }
   }
