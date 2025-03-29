@@ -39,6 +39,9 @@ RUN npm install -g @anthropic-ai/claude-code
 # Install shell
 RUN apt-get update && apt-get install -y bash && rm -rf /var/lib/apt/lists/*
 
+# gh install
+RUN apt-get update && apt-get install -y git gh && rm -rf /var/lib/apt/lists/*
+
 # Copy only necessary files from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
