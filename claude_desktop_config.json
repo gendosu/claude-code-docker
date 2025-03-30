@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "claude-code": {
+      "command": "/path/to/claude-code-docker-run.sh",
+      "args": [
+        "mcp",
+        "serve"
+      ],
+      "env": {
+        "NODENV_VERSION": "22.11.0",
+        "GITHUB_TOKEN": "<Your GitHub Token>"
+      }
+    }
+  }
+}

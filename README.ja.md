@@ -7,8 +7,30 @@ Claude Code用のDockerイメージです。このイメージを使用するこ
 - Node.js 22.11.0ベース
 - @anthropic-ai/claude-codeがプリインストール済み
 - マルチプラットフォーム対応（linux/amd64, linux/arm64）
+- **コンテナの再利用機能**（新機能）
 
 ## 使用方法
+
+### スクリプトを使用する方法（推奨）
+
+1. `claude-code-docker-run.sh`スクリプトをダウンロードして実行権限を付与します：
+```bash
+chmod +x claude-code-docker-run.sh
+```
+
+2. スクリプトを実行：
+```bash
+./claude-code-docker-run.sh
+```
+または追加のオプションを指定：
+```bash
+./claude-code-docker-run.sh mcp serve
+```
+
+このスクリプトは以下の処理を行います：
+- イメージが存在しない場合は自動的にプル
+- コンテナが存在しない場合は新規作成
+- コンテナが存在する場合は再利用（起動中なら接続、停止中なら起動）
 
 ### Docker Composeを使用する場合
 
@@ -20,17 +42,29 @@ GITHUB_ID=your_github_id
 
 2. コンテナの起動:
 ```bash
-docker compose up --build
+docker compose up
 ```
 
-### Docker単体で使用する場合
-
+3. 次回以降は同じコンテナが再利用されます:
 ```bash
-docker run --rm -it \
+docker compose start
+```
+
+### Docker単体で使用する場合（手動で再利用）
+
+初回起動（コンテナ作成）:
+```bash
+docker run -it \
+  --name claude-code-container \
   -e GITHUB_TOKEN \
   -w `pwd` \
-  -v `pwd`:`pwd`` \
+  -v `pwd`:`pwd` \
   ghcr.io/gendosu/claude-code-docker:latest
+```
+
+次回以降（コンテナ再利用）:
+```bash
+docker start -i claude-code-container
 ```
 
 ### Claude DesktopのMCP Serverとして使用する際の設定ファイルの例
@@ -41,18 +75,8 @@ Claude Desktopの設定ファイル（`claude_desktop_config.json`）に以下�
 {
   "mcpServers": {
     "claude-code": {
-      "command": "docker",
+      "command": "/path/to/claude-code-docker-run.sh",
       "args": [
-        "run",
-        "--rm",
-        "-i",
-        "-e",
-        "GITHUB_TOKEN",
-        "-w",
-        "/path/to/your/workspace",
-        "-v",
-        "/path/to/your/workspace:/path/to/your/workspace",
-        "ghcr.io/gendosu/claude-code-docker:latest",
         "mcp",
         "serve"
       ],
@@ -66,11 +90,8 @@ Claude Desktopの設定ファイル（`claude_desktop_config.json`）に以下�
 ```
 
 設定項目の説明：
-- `command`: Dockerコマンドを指定
-- `args`: 
-  - `-w`: 作業ディレクトリを指定
-  - `-v`: ホストとコンテナ間のボリュームマウントを指定
-  - `mcp serve`: Claude Code MCPサーバーを起動
+- `command`: 作成したスクリプトのパスを指定
+- `args`: MCPサーバー起動に必要な引数を指定
 
 注意: この設定はClaude Desktop専用です。VSCodeでは異なる設定方法が必要となります。
 
