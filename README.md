@@ -16,6 +16,7 @@ A Docker image for Claude Code that allows you to run Claude Code in a container
 ```env
 GITHUB_TOKEN=your_github_token
 GITHUB_ID=your_github_id
+$ echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
 2. Start the container:
