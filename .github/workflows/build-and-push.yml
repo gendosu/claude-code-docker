@@ -1,3 +1,6 @@
+GitHub Actionsのワークフローにスケジュールを追加するには、`on`セクションに`schedule`イベントを追加する必要があります。以下のように毎朝日本時間06:00に起動するスケジュールを追加してみましょう。
+
+```yaml
 name: Build and Push Docker Image
 
 on:
@@ -5,6 +8,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: '00 21 * * *'  # 日本時間06:00に対応するUTC時間は前日の21:00
 
 jobs:
   build:
@@ -34,3 +39,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}:latest
           platforms: linux/amd64,linux/arm64
+```
+
+この変更により、ワークフローは毎日日本時間の06:00に実行されます。
