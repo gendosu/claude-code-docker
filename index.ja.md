@@ -36,6 +36,23 @@ claude-code-docker/
 └── tsconfig.json                # TypeScript 設定
 ```
 
+## AIアクセス制御
+
+`.aiexclude` ファイルを使用して、AIがアクセスできないファイルを指定できます。このファイルは `.gitignore` と同じ形式で記述し、マッチするファイルやディレクトリへのAIのアクセスを制限します。
+
+例：
+```
+# シークレットファイルを除外
+secrets.json
+.env*
+
+# 特定のディレクトリを除外
+private/
+confidential/
+```
+
+`.aiexclude` ファイルでマッチしたファイルやディレクトリは、AIによる読み取りが禁止されます。これにより、機密情報や非公開データをAIから保護することができます。
+
 ## 主要コンポーネント
 
 ### Dockerfile
