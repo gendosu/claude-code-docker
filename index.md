@@ -117,9 +117,9 @@ docker run -it \
 docker start -i claude-code-container
 ```
 
-## Claude Desktop Integration
+## Integration with Claude Desktop
 
-`claude_desktop_config.json` example configuration:
+Example `claude_desktop_config.json`:
 
 ```json
 {
@@ -144,7 +144,7 @@ docker start -i claude-code-container
 - **Fixed Container Name**: Container name is fixed for reuse
 - **Removal of --rm Flag**: Prevents automatic container deletion
 - **Interactive Mode**: Uses -it (stdin_open: true, tty: true)
-- **Volume Mount**: Mounts current directory at the same path
+- **Volume Mounting**: Mounts current directory at the same path
 - **Container State Check**: Logic to check if already running
 
 ## Troubleshooting
