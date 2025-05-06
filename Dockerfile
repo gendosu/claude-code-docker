@@ -38,7 +38,7 @@ WORKDIR /app
 RUN npm install -g @anthropic-ai/claude-code
 
 # Install shell
-RUN apt-get update && apt-get install -y bash && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y bash curl && rm -rf /var/lib/apt/lists/*
 
 # gh install
 RUN apt-get update && apt-get install -y git gh && rm -rf /var/lib/apt/lists/*
@@ -54,6 +54,18 @@ COPY . .
 RUN useradd -m appuser \
     && chown -R appuser:appuser /app
 USER appuser
+
+RUN git clone https://github.com/nodenv/nodenv.git ~/.nodenv
+
+RUN git clone https://github.com/nodenv/node-build.git "$($HOME/.nodenv/bin/nodenv root)"/plugins/node-build
+
+RUN echo 'export PATH="$HOME/.nodenv/bin:$PATH"' >> ~/.bashrc
+
+RUN echo 'eval "$(nodenv init - bash)"' >> ~/.bashrc
+
+# 必要であれば、ここでボリューム内のディレクトリのパーミッションを変更
+RUN mkdir -p /home/appuser/.nodenv/versions
+RUN chown -R appuser:appuser /home/appuser/.nodenv/versions
 
 # Run the application.
 ENTRYPOINT ["npx", "claude"]
