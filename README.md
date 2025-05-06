@@ -16,7 +16,6 @@ A Docker image for Claude Code that allows you to run Claude Code in a container
 ```env
 GITHUB_TOKEN=your_github_token
 GITHUB_ID=your_github_id
-$ echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
 2. Start the container:
@@ -31,6 +30,7 @@ docker run --rm -it \
   -e GITHUB_TOKEN \
   -w `pwd` \
   -v `pwd`:`pwd` \
+  -v claude-code-docker-node-versions:/home/appuser/.nodenv/versions \
   ghcr.io/gendosu/claude-code-docker:latest
 ```
 
@@ -53,6 +53,8 @@ Add the following configuration to your Claude Desktop config file (`claude_desk
         "/path/to/your/workspace",
         "-v",
         "/path/to/your/workspace:/path/to/your/workspace",
+        "-v",
+        "claude-code-docker-node-versions:/home/appuser/.nodenv/versions",
         "ghcr.io/gendosu/claude-code-docker:latest",
         "mcp",
         "serve"
