@@ -55,17 +55,26 @@ RUN useradd -m appuser \
     && chown -R appuser:appuser /app
 USER appuser
 
+# Install nodenv and node-build plugin
 RUN git clone https://github.com/nodenv/nodenv.git ~/.nodenv
-
 RUN git clone https://github.com/nodenv/node-build.git "$($HOME/.nodenv/bin/nodenv root)"/plugins/node-build
 
-RUN echo 'export PATH="$HOME/.nodenv/bin:$PATH"' >> ~/.bashrc
+# Create necessary directories with proper permissions
+RUN mkdir -p /home/appuser/.nodenv/versions \
+    && chown -R appuser:appuser /home/appuser/.nodenv/versions
 
-RUN echo 'eval "$(nodenv init - bash)"' >> ~/.bashrc
+# Set up nodenv environment variables globally
+ENV PATH="/home/appuser/.nodenv/bin:/home/appuser/.nodenv/shims:$PATH"
+ENV NODENV_ROOT="/home/appuser/.nodenv"
 
-# 必要であれば、ここでボリューム内のディレクトリのパーミッションを変更
-RUN mkdir -p /home/appuser/.nodenv/versions
-RUN chown -R appuser:appuser /home/appuser/.nodenv/versions
+# Configure shell initialization files for both interactive and non-interactive shells
+RUN echo 'export PATH="$HOME/.nodenv/bin:$PATH"' >> ~/.bashrc \
+    && echo 'eval "$(nodenv init - bash)"' >> ~/.bashrc \
+    && echo 'export PATH="$HOME/.nodenv/bin:$PATH"' >> ~/.profile \
+    && echo 'eval "$(nodenv init - bash)"' >> ~/.profile
+
+# Initialize nodenv shims directory
+RUN /home/appuser/.nodenv/bin/nodenv init - bash > /dev/null || true
 
 # Run the application.
 ENTRYPOINT ["npx", "claude"]
