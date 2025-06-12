@@ -35,6 +35,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Get claude-code version
+        id: get_version
+        run: |
+          # Extract claude-code version from package.json
+          VERSION=$(cat package.json | jq -r '.dependencies."@anthropic-ai/claude-code"' | sed 's/[^0-9.]//g')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Claude-code version: $VERSION"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
@@ -42,5 +50,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}
             ${{ secrets.DOCKERHUB_USERNAME }}/claude-code-docker:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/claude-code-docker:${{ steps.get_version.outputs.VERSION }}
           platforms: linux/amd64,linux/arm64
