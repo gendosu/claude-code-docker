@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 
 ARG NODE_VERSION=22.11.0
 ARG PNPM_VERSION=latest
@@ -36,7 +35,8 @@ ENV SHELL=/bin/bash
 
 WORKDIR /app
 
-RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
+ARG CLAUDE_CODE_VERSION
+RUN echo "Installing claude-code version: ${CLAUDE_CODE_VERSION}" && npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
 # Install shell
 RUN apt-get update && apt-get install -y bash curl && rm -rf /var/lib/apt/lists/*
