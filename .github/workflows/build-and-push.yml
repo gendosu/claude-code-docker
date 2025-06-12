@@ -43,7 +43,11 @@ jobs:
       - name: Get claude-code version
         id: get_version
         run: |
-          # Use manual input version if provided, otherwise get latest from npm
+          # Get latest version from npm
+          LATEST_VERSION=$(npm view @anthropic-ai/claude-code version)
+          echo "Latest version on npm: $LATEST_VERSION"
+          
+          # Use manual input version if provided, otherwise use latest
           if [ -n "${{ github.event.inputs.version }}" ]; then
             VERSION="${{ github.event.inputs.version }}"
             echo "Using manual version: $VERSION"
@@ -57,14 +61,21 @@ jobs:
               exit 1
             fi
           else
-            # Get latest version from npm
-            VERSION=$(npm view @anthropic-ai/claude-code version)
-            echo "Using latest version from npm: $VERSION"
+            VERSION=$LATEST_VERSION
+            echo "Using latest version: $VERSION"
+          fi
+          
+          # Check if this is the latest version
+          if [ "$VERSION" = "$LATEST_VERSION" ]; then
+            echo "IS_LATEST=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_LATEST=false" >> $GITHUB_OUTPUT
           fi
           
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image (with latest tag)
+        if: steps.get_version.outputs.IS_LATEST == 'true'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -75,5 +86,18 @@ jobs:
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}
             ${{ secrets.DOCKERHUB_USERNAME }}/claude-code-docker:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/claude-code-docker:${{ steps.get_version.outputs.VERSION }}
+          platforms: linux/amd64,linux/arm64
+
+      - name: Build and push Docker image (version tag only)
+        if: steps.get_version.outputs.IS_LATEST == 'false'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          build-args: |
+            CLAUDE_CODE_VERSION=${{ steps.get_version.outputs.VERSION }}
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}
             ${{ secrets.DOCKERHUB_USERNAME }}/claude-code-docker:${{ steps.get_version.outputs.VERSION }}
           platforms: linux/amd64,linux/arm64
