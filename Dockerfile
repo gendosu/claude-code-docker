@@ -3,6 +3,7 @@
 ARG NODE_VERSION=22.11.0
 ARG PNPM_VERSION=latest
 ARG GITHUB_TOKEN
+ARG CLAUDE_CODE_VERSION=latest
 
 ################################################################################
 # Use node image for base image for all stages.
@@ -35,7 +36,7 @@ ENV SHELL=/bin/bash
 
 WORKDIR /app
 
-RUN npm install -g @anthropic-ai/claude-code
+RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
 # Install shell
 RUN apt-get update && apt-get install -y bash curl && rm -rf /var/lib/apt/lists/*

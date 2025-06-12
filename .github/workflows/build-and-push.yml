@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to use (optional, defaults to auto-detect from package.json)'
+        required: false
+        type: string
   schedule:
     - cron: '00 21 * * *'  # 日本時間06:00に対応するUTC時間は前日の21:00
 
@@ -38,16 +43,34 @@ jobs:
       - name: Get claude-code version
         id: get_version
         run: |
-          # Extract claude-code version from package.json
-          VERSION=$(cat package.json | jq -r '.dependencies."@anthropic-ai/claude-code"' | sed 's/[^0-9.]//g')
+          # Use manual input version if provided, otherwise extract from package.json
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+            echo "Using manual version: $VERSION"
+          else
+            # Extract claude-code version from package.json
+            VERSION=$(cat package.json | jq -r '.dependencies."@anthropic-ai/claude-code"' | sed 's/[^0-9.]//g')
+            echo "Using auto-detected version: $VERSION"
+          fi
+          
+          # Validate that the version exists on npm
+          echo "Checking if @anthropic-ai/claude-code@$VERSION exists on npm..."
+          if npm view "@anthropic-ai/claude-code@$VERSION" version >/dev/null 2>&1; then
+            echo "✓ Version $VERSION exists on npm"
+          else
+            echo "✗ Error: @anthropic-ai/claude-code@$VERSION does not exist on npm"
+            exit 1
+          fi
+          
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          echo "Claude-code version: $VERSION"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
+          build-args: |
+            CLAUDE_CODE_VERSION=${{ steps.get_version.outputs.VERSION }}
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}
