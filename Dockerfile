@@ -35,7 +35,7 @@ ENV SHELL=/bin/bash
 
 WORKDIR /app
 
-ARG CLAUDE_CODE_VERSION=latest
+ARG CLAUDE_CODE_VERSION
 RUN echo "Installing claude-code version: ${CLAUDE_CODE_VERSION}" && npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
 # Install shell
