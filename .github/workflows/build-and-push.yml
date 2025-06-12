@@ -43,23 +43,23 @@ jobs:
       - name: Get claude-code version
         id: get_version
         run: |
-          # Use manual input version if provided, otherwise extract from package.json
+          # Use manual input version if provided, otherwise get latest from npm
           if [ -n "${{ github.event.inputs.version }}" ]; then
             VERSION="${{ github.event.inputs.version }}"
             echo "Using manual version: $VERSION"
+            
+            # Validate that the version exists on npm
+            echo "Checking if @anthropic-ai/claude-code@$VERSION exists on npm..."
+            if npm view "@anthropic-ai/claude-code@$VERSION" version >/dev/null 2>&1; then
+              echo "✓ Version $VERSION exists on npm"
+            else
+              echo "✗ Error: @anthropic-ai/claude-code@$VERSION does not exist on npm"
+              exit 1
+            fi
           else
-            # Extract claude-code version from package.json
-            VERSION=$(cat package.json | jq -r '.dependencies."@anthropic-ai/claude-code"' | sed 's/[^0-9.]//g')
-            echo "Using auto-detected version: $VERSION"
-          fi
-          
-          # Validate that the version exists on npm
-          echo "Checking if @anthropic-ai/claude-code@$VERSION exists on npm..."
-          if npm view "@anthropic-ai/claude-code@$VERSION" version >/dev/null 2>&1; then
-            echo "✓ Version $VERSION exists on npm"
-          else
-            echo "✗ Error: @anthropic-ai/claude-code@$VERSION does not exist on npm"
-            exit 1
+            # Get latest version from npm
+            VERSION=$(npm view @anthropic-ai/claude-code version)
+            echo "Using latest version from npm: $VERSION"
           fi
           
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
